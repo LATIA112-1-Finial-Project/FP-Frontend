@@ -42,7 +42,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="register">送出</Button>
+            <Button theme="success" type="submit" block @click="onSubmit">送出</Button>
           </FormItem>
         </Form>
       </div>
@@ -50,14 +50,53 @@
   </div>
 </template>
 <script setup lang="ts">
-import {Button, Form, FormItem, Input, Message} from "tdesign-vue-next";
+import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
 import { MailIcon, LockOnIcon, ArrowLeftIcon } from 'tdesign-icons-vue-next'
 import {ref} from "vue";
+import { useFetch } from "@vueuse/core";
+import { useRouter } from "vue-router"
 const registerForm = ref({
   email: '',
   password: '',
   chkPassword: '',
 })
+
+const router = useRouter()
+
+
+interface RegisterResData {
+  code: number;
+  msg: string;
+  data: string;
+}
+
+const onSubmit = async () => {
+  if (registerForm.value.password !== registerForm.value.chkPassword) {
+    await MessagePlugin.error('密碼不一致')
+    return
+  }
+  const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: registerForm.value.email,
+      password: registerForm.value.password,
+    })
+  }).get().json<RegisterResData>()
+  if (data.value) {
+    if (data.value.msg === 'error') {
+     await MessagePlugin.error('註冊失敗')
+      return
+    } else if (data.value.msg === 'duplicate') {
+      await MessagePlugin.error('此帳號已被註冊')
+      return
+    }
+    await MessagePlugin.success('註冊成功')
+    await router.replace({name: 'userLogin'})
+  }
+}
 </script>
 <style scoped>
 </style>

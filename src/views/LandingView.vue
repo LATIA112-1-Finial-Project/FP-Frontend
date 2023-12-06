@@ -26,9 +26,5 @@ import {ArrowRightIcon} from "tdesign-icons-vue-next"
 </script>
 
 <style scoped>
-.t-button {
-  height: var(--td-size-14);
-  font-size: var(--td-size-7);
-}
 
 </style>
