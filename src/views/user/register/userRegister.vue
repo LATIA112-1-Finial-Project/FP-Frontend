@@ -103,7 +103,7 @@ const onSubmit = async () => {
       await MessagePlugin.error('此帳號已被註冊')
       return
     }
-    await MessagePlugin.success('註冊成功')
+    await MessagePlugin.success('註冊成功，請前往電子郵件進行驗證')
     await router.replace({name: 'userLogin'})
   }
 }
