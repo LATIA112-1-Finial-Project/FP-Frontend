@@ -17,7 +17,15 @@
         <div class="text-center text-white">請輸入您的電子郵件與密碼</div>
 
         <Form ref="form" class="!mt-8 !p-4 !px-12 !pb-8" :data="registerForm" :colon="true" :label-width="0">
-          <FormItem class="my-4" name="account">
+          <FormItem class="my-4" name="username">
+            <Input v-model="registerForm.username" clearable placeholder="使用者名稱">
+              <template #prefix-icon>
+                <User1Icon />
+              </template>
+            </Input>
+          </FormItem>
+
+          <FormItem class="my-4" name="email">
             <Input v-model="registerForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
                 <MailIcon />
@@ -51,11 +59,12 @@
 </template>
 <script setup lang="ts">
 import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
-import { MailIcon, LockOnIcon, ArrowLeftIcon } from 'tdesign-icons-vue-next'
+import { MailIcon, LockOnIcon, ArrowLeftIcon, User1Icon } from 'tdesign-icons-vue-next'
 import {ref} from "vue";
 import { useFetch } from "@vueuse/core";
 import { useRouter } from "vue-router"
 const registerForm = ref({
+  username: '',
   email: '',
   password: '',
   chkPassword: '',
@@ -81,6 +90,7 @@ const onSubmit = async () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
+      username: registerForm.value.username,
       email: registerForm.value.email,
       password: registerForm.value.password,
     })

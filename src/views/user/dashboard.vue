@@ -32,10 +32,51 @@
 
 <script setup lang="ts" >
 import {useAuthStore} from "@/stores/auth.ts";
+import {onMounted} from "vue";
+import { useFetch } from "@vueuse/core";
 
 const authStore = useAuthStore();
 
 const userInfo = authStore.userInfo
+
+interface UserInfoResData {
+  code: number;
+  msg: string;
+  data: string;
+}
+
+interface UserInfo {
+  username: string;
+  email: string;
+}
+
+// get user info from GET import.meta.env.VITE_API_ENDPOINT + /api/v1/user_info
+
+const handleUserInfo = async () => {
+  const { data } = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/user_info', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${userInfo.token}`
+    }
+  }).get().json<UserInfoResData>()
+  if(data.value) {
+    if (data.value.msg !== 'success') {
+      return
+    }
+    const resData = data.value.data
+    const userInfo: UserInfo = {
+      username: resData.username,
+      email: resData.email,
+    }
+    authStore.setUserInfo(userInfo)
+  }
+}
+
+onMounted(() => {
+  handleUserInfo()
+})
+
 </script>
 
 <style scoped>

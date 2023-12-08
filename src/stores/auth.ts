@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
-import {UserInfo} from "@/apiModel/user/types";
+import {UserInfoFromLogin} from "@/apiModel/user/types";
 
 const info = {
     token: "",
+    email: "",
     username: "",
 };
 
@@ -11,11 +12,18 @@ export const useAuthStore =  defineStore('auth', {
         userInfo: info,
     }),
     actions: {
-        setUserInfo(userInfo: UserInfo = info) {
-            this.userInfo = userInfo;
+        setUserInfoFromLogin(userInfo: UserInfoFromLogin = info) {
+            this.userInfo.token = userInfo.token;
+            this.userInfo.email = userInfo.email;
+        },
+        setUserInfo(userInfo: UserInfoFromLogin = info) {
+            this.userInfo.username = userInfo.username;
+            this.userInfo.email = userInfo.email;
         },
         logout() {
             this.token = "";
+            this.email = "";
+            this.username= "";
         },
     },
     getters: {

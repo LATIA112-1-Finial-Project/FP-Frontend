@@ -19,7 +19,7 @@ if (!process.env.VITE_API_ENDPOINT) {
   }
   else {
     process.env.VITE_API_ENDPOINT = "http://127.0.0.1:8080/api/v1";
-    process.env.VITE_USER_NAME="admin"
+    process.env.VITE_USER_NAME="admin@latia.com"
     process.env.VITE_USER_PASSWORD="admin"
   }
 }

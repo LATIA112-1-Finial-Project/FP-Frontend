@@ -23,7 +23,7 @@
 
         <Form ref="form" class="!p-4 !px-12 !pb-8" :data="loginForm" :colon="true" :label-width="0">
           <FormItem class="my-4" name="account">
-            <Input v-model="loginForm.username" clearable placeholder="電子郵件">
+            <Input v-model="loginForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
                 <MailIcon />
               </template>
@@ -53,11 +53,11 @@ import {ref} from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useFetch } from "@vueuse/core";
 import { useRouter } from "vue-router"
-import {UserInfo} from "@/apiModel/user/types";
+import {UserInfoFromLogin} from "@/apiModel/user/types";
 
 const authStore = useAuthStore();
 const loginForm = ref({
-  username: ref(import.meta.env.VITE_USER_NAME),
+  email: ref(import.meta.env.VITE_USER_NAME),
   password: ref(import.meta.env.VITE_USER_PASSWORD),
 })
 
@@ -93,9 +93,9 @@ const onSubmit = async () => {
     const resData = data.value.data
     const userInfo = {
       token: resData.token,
-      username: loginForm.value.username,
-    } as UserInfo
-    authStore.setUserInfo(userInfo)
+      email: loginForm.value.email,
+    } as UserInfoFromLogin
+    authStore.setUserInfoFromLogin(userInfo)
     await MessagePlugin.success("登入成功")
     if (authStore.isLoggedIn) loginAfter()
   }
