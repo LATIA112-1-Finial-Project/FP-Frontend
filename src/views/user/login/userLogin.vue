@@ -86,8 +86,13 @@ const onSubmit = async () => {
     body: JSON.stringify(loginForm.value),
   }).get().json<LoginResData>()
   if (data.value) {
-    if (data.value.msg !== 'success') {
+    if (data.value.msg === 'error') {
       await MessagePlugin.error("登入失敗，請檢查帳號密碼是否正確")
+      return
+    }
+    // not_confirmed
+    if (data.value.msg === 'not_confirmed') {
+      await MessagePlugin.error("電子郵件尚未驗證")
       return
     }
     const resData = data.value.data
