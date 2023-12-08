@@ -17,10 +17,10 @@
       </t-menu-item>
       <template #operations>
         <t-button variant="text" shape="square" class="mr-4">
-          <template #icon><t-icon name="user" /></template>
+          <template #icon><User1Icon /></template>
         </t-button>
-        <t-button variant="text" shape="square" class="mr-8">
-          <template #icon><t-icon name="ellipsis" /></template>
+        <t-button variant="text" shape="square" class="mr-8" @click="handleLogout">
+          <template #icon><LogoutIcon /></template>
         </t-button>
       </template>
     </t-head-menu>
@@ -34,12 +34,23 @@
 import {useAuthStore} from "@/stores/auth.ts";
 import {onMounted} from "vue";
 import { useFetch } from "@vueuse/core";
+import {User1Icon, LogoutIcon} from "tdesign-icons-vue-next";
+import {MessagePlugin} from "tdesign-vue-next";
+import {useRouter} from "vue-router";
 
 const authStore = useAuthStore();
 
 const userInfo = authStore.userInfo
 
+const router = useRouter()
+
 interface UserInfoResData {
+  code: number;
+  msg: string;
+  data: string;
+}
+
+interface generalResData {
   code: number;
   msg: string;
   data: string;
@@ -73,7 +84,33 @@ const handleUserInfo = async () => {
   }
 }
 
+
+const handleLogout = async () => {
+  const { data } = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/logout', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).get().json<generalResData>()
+  if(data.value) {
+    if (data.value.msg !== 'success') {
+      return
+    }
+    await MessagePlugin.success("登出成功")
+    authStore.logout()
+    await router.replace({name: 'userLogin'})
+  }
+}
+
+// if no token, redirect to login page
+if (!authStore.isLoggedIn) {
+  router.replace({name: 'userLogin'})
+}
+
 onMounted(() => {
+  if(!authStore.isLoggedIn){
+    router.replace({name: 'userLogin'})
+  }
   handleUserInfo()
 })
 
