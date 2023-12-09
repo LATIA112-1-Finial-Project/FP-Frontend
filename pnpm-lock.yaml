@@ -544,7 +544,7 @@ packages:
       '@vueuse/shared': 10.6.1(vue@3.3.4)
       vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-apiModel'
       - vue
     dev: false
 
@@ -557,7 +557,7 @@ packages:
     dependencies:
       vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-apiModel'
       - vue
     dev: false
 

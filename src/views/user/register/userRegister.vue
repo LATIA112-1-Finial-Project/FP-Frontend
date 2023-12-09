@@ -17,7 +17,15 @@
         <div class="text-center text-white">請輸入您的電子郵件與密碼</div>
 
         <Form ref="form" class="!mt-8 !p-4 !px-12 !pb-8" :data="registerForm" :colon="true" :label-width="0">
-          <FormItem class="my-4" name="account">
+          <FormItem class="my-4" name="username">
+            <Input v-model="registerForm.username" clearable placeholder="使用者名稱">
+              <template #prefix-icon>
+                <User1Icon />
+              </template>
+            </Input>
+          </FormItem>
+
+          <FormItem class="my-4" name="email">
             <Input v-model="registerForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
                 <MailIcon />
@@ -42,7 +50,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="register">送出</Button>
+            <Button theme="success" type="submit" block @click="onSubmit">送出</Button>
           </FormItem>
         </Form>
       </div>
@@ -50,14 +58,55 @@
   </div>
 </template>
 <script setup lang="ts">
-import {Button, Form, FormItem, Input, Message} from "tdesign-vue-next";
-import { MailIcon, LockOnIcon, ArrowLeftIcon } from 'tdesign-icons-vue-next'
+import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
+import { MailIcon, LockOnIcon, ArrowLeftIcon, User1Icon } from 'tdesign-icons-vue-next'
 import {ref} from "vue";
+import { useFetch } from "@vueuse/core";
+import { useRouter } from "vue-router"
 const registerForm = ref({
+  username: '',
   email: '',
   password: '',
   chkPassword: '',
 })
+
+const router = useRouter()
+
+
+interface RegisterResData {
+  code: number;
+  msg: string;
+  data: string;
+}
+
+const onSubmit = async () => {
+  if (registerForm.value.password !== registerForm.value.chkPassword) {
+    await MessagePlugin.error('密碼不一致')
+    return
+  }
+  const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: registerForm.value.username,
+      email: registerForm.value.email,
+      password: registerForm.value.password,
+    })
+  }).get().json<RegisterResData>()
+  if (data.value) {
+    if (data.value.msg === 'error') {
+     await MessagePlugin.error('註冊失敗')
+      return
+    } else if (data.value.msg === 'duplicate') {
+      await MessagePlugin.error('此帳號已被註冊')
+      return
+    }
+    await MessagePlugin.success('註冊成功，請前往電子郵件進行驗證')
+    await router.replace({name: 'userLogin'})
+  }
+}
 </script>
 <style scoped>
 </style>

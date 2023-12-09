@@ -39,6 +39,33 @@ const routes: Array<RouteRecordRaw> = [
         component: () =>
             import("@/views/charts/testECharts.vue"),
     },
+    {
+        path: "/dashboard",
+        name: "showDashboard",
+        meta: {
+            titleKey: "Dashboard 頁面",
+        },
+        component: () =>
+            import("@/views/user/dashboard.vue"),
+    },
+    {
+        path: "/discuss",
+        name: "showDiscuss",
+        meta: {
+            titleKey: "討論區頁面",
+        },
+        component: () =>
+            import("@/views/user/discuss.vue"),
+    },
+    {
+        path: "/userSetting",
+        name: "userSetting",
+        meta: {
+            titleKey: "使用者設定頁面",
+        },
+        component: () =>
+            import("@/views/user/userSetting.vue"),
+    }
 ];
 
 export const router: Router = createRouter({

@@ -1,7 +1,6 @@
 <template>
   <div class="h-screen bg-cover bg-center " style="background-image: url('/assets/ntnu_bg.png')">
     <div class="flex flex-col items-center justify-center h-full  backdrop-blur-sm">
-
       <div
           class="absolute inset-0 bg-opacity-30 font-electrolyte bg-gradient-to-bl from-black to-transparent bg-gradient-to-tl from-black to-transparent opacity-75"></div>
       <div class="w-1/3 rounded-md bg-opacity-40 rounded-3xl relative bg-black p-4">
@@ -40,7 +39,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="login">登入</Button>
+            <Button theme="success" type="submit" block @click="onSubmit">登入</Button>
           </FormItem>
         </Form>
       </div>
@@ -48,13 +47,69 @@
   </div>
 </template>
 <script setup lang="ts">
-import {Button, Form, FormItem, Input, Message} from "tdesign-vue-next";
+import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
 import { MailIcon, LockOnIcon, ArrowLeftIcon } from 'tdesign-icons-vue-next'
 import {ref} from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useFetch } from "@vueuse/core";
+import { useRouter } from "vue-router"
+import {UserInfoFromLogin} from "@/apiModel/user/types";
+
+const authStore = useAuthStore();
 const loginForm = ref({
-  email: '',
-  password: '',
+  email: ref(import.meta.env.VITE_USER_NAME),
+  password: ref(import.meta.env.VITE_USER_PASSWORD),
 })
+
+const isLogin = ref(false)
+
+const router = useRouter();
+
+
+interface AuthData {
+  token: string;
+  type: string;
+}
+
+interface LoginResData {
+  code: number;
+  msg: string;
+  data: AuthData;
+}
+
+const onSubmit = async () => {
+  const { data } = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}`+ '/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(loginForm.value),
+  }).get().json<LoginResData>()
+  if (data.value) {
+    if (data.value.msg === 'error') {
+      await MessagePlugin.error("登入失敗，請檢查帳號密碼是否正確")
+      return
+    }
+    // not_confirmed
+    if (data.value.msg === 'not_confirmed') {
+      await MessagePlugin.error("電子郵件尚未驗證")
+      return
+    }
+    const resData = data.value.data
+    const userInfo = {
+      token: resData.token,
+      email: loginForm.value.email,
+    } as UserInfoFromLogin
+    authStore.setUserInfoFromLogin(userInfo)
+    await MessagePlugin.success("登入成功")
+    if (authStore.isLoggedIn) loginAfter()
+  }
+}
+
+const loginAfter = () => {
+  isLogin.value = true
+  router.replace({name: 'showDashboard'})
+}
 </script>
 <style scoped>
 </style>
