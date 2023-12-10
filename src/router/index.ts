@@ -58,24 +58,6 @@ const routes: Array<RouteRecordRaw> = [
                     import("@/views/user/arxivPage.vue"),
             },
         ],
-    },
-    {
-        path: "/discuss",
-        name: "showDiscuss",
-        meta: {
-            titleKey: "討論區頁面",
-        },
-        component: () =>
-            import("@/views/user/discuss.vue"),
-    },
-    {
-        path: "/userSetting",
-        name: "userSetting",
-        meta: {
-            titleKey: "使用者設定頁面",
-        },
-        component: () =>
-            import("@/views/user/userSetting.vue"),
     }
 ];
 
