@@ -47,6 +47,17 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () =>
             import("@/views/user/dashboard.vue"),
+        children: [
+            {
+                path: "/arxiv",
+                name: "showArxiv",
+                meta: {
+                    titleKey: "Arxiv 頁面",
+                },
+                component: () =>
+                    import("@/views/user/arxivPage.vue"),
+            },
+        ],
     },
     {
         path: "/discuss",
