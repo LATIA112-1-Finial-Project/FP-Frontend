@@ -124,10 +124,12 @@ const resetUsernameForm = ref<ResetUsernameForm>({
 const onSubmitResetUsername = async () => {
   if(resetUsernameForm.value.new_username === ''){
     await MessagePlugin.error('名稱不可為空')
+    isPopupMessage.value = false
     return
   }
   if(resetUsernameForm.value.new_username === resetUsernameForm.value.old_username){
     await MessagePlugin.error('不可與舊名稱相同')
+    isPopupMessage.value = false
     return
   }
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/reset_username', {
@@ -149,13 +151,16 @@ const onSubmitResetUsername = async () => {
     if (data.value.msg === 'error') {
       if(data.value.data === 'Required missing'){
         await MessagePlugin.error('名稱不可為空')
+        isPopupMessage.value = false
         return
       }
       else if(data.value.data === 'New same as old'){
         await MessagePlugin.error('不可與舊名稱相同')
+        isPopupMessage.value = false
         return
       }
       await MessagePlugin.error("修改失敗，可能是連線逾時，請重新登入後重試")
+      isPopupMessage.value = false
       return
     }
     await MessagePlugin.success("修改成功")
