@@ -21,9 +21,9 @@ export const useAuthStore =  defineStore('auth', {
             this.userInfo.email = userInfo.email;
         },
         logout() {
-            this.token = "";
-            this.email = "";
-            this.username= "";
+            this.userInfo.token = "";
+            this.userInfo.username = "";
+            this.userInfo.email= "";
         },
     },
     getters: {

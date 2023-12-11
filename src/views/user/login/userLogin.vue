@@ -7,7 +7,7 @@
         <router-link to="/" class="self-start">
           <Button theme="success" ghost>
             <template #icon>
-              <ArrowLeftIcon />
+              <ArrowLeftIcon/>
             </template>
             上一頁
           </Button>
@@ -25,7 +25,7 @@
           <FormItem class="my-4" name="account">
             <Input v-model="loginForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
-                <MailIcon />
+                <MailIcon/>
               </template>
             </Input>
           </FormItem>
@@ -33,7 +33,7 @@
           <FormItem name="password">
             <Input v-model="loginForm.password" type="password" clearable placeholder="密碼">
               <template #prefix-icon>
-                <lock-on-icon />
+                <lock-on-icon/>
               </template>
             </Input>
           </FormItem>
@@ -48,11 +48,11 @@
 </template>
 <script setup lang="ts">
 import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
-import { MailIcon, LockOnIcon, ArrowLeftIcon } from 'tdesign-icons-vue-next'
+import {MailIcon, LockOnIcon, ArrowLeftIcon} from 'tdesign-icons-vue-next'
 import {ref} from "vue";
-import { useAuthStore } from "@/stores/auth";
-import { useFetch } from "@vueuse/core";
-import { useRouter } from "vue-router"
+import {useAuthStore} from "@/stores/auth";
+import {useFetch} from "@vueuse/core";
+import {useRouter} from "vue-router"
 import {UserInfoFromLogin} from "@/apiModel/user/types";
 
 const authStore = useAuthStore();
@@ -69,6 +69,7 @@ const router = useRouter();
 interface AuthData {
   token: string;
   type: string;
+  detail: string;
 }
 
 interface LoginResData {
@@ -78,13 +79,20 @@ interface LoginResData {
 }
 
 const onSubmit = async () => {
-  const { data } = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}`+ '/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(loginForm.value),
-  }).get().json<LoginResData>()
+  const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginForm.value),
+      },
+      {
+        updateDataOnError: true,
+        onFetchError: (error) => {
+          return error
+        }
+      }
+  ).get().json<LoginResData>()
   if (data.value) {
     if (data.value.msg === 'error') {
       await MessagePlugin.error("登入失敗，請檢查帳號密碼是否正確")
@@ -93,6 +101,10 @@ const onSubmit = async () => {
     // not_confirmed
     if (data.value.msg === 'not_confirmed') {
       await MessagePlugin.error("電子郵件尚未驗證")
+      return
+    }
+    else if (data.value.msg === 'not_confirmed') {
+      await MessagePlugin.success(data.value.msg)
       return
     }
     const resData = data.value.data
