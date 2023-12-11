@@ -15,13 +15,15 @@
           <t-menu-item value="2-2"> 學校聲望</t-menu-item>
           <t-menu-item value="2-3"> 師資聲望</t-menu-item>
         </t-submenu>
-        <t-menu-item value="3" @click="handleMenuClick" class="text-md font-semibold">
-            論文領域熱門分析
+        <t-menu-item value="3" @click="handleArxivClick" class="text-md font-semibold">
+          論文領域熱門分析
         </t-menu-item>
         <template #operations>
-          <t-button variant="text" shape="square" class="mr-4">
+          <t-button variant="text" shape="square" class="mr-4" @click="handleSettingClick">
             <template #icon>
-              <User1Icon/>
+              <router-link :to="{name: 'showSetting'}">
+                <User1Icon />
+              </router-link>
             </template>
           </t-button>
           <t-button variant="text" shape="square" class="mr-8" @click="handleLogout">
@@ -35,8 +37,10 @@
     <t-layout class="flex">
       <router-view v-if="pageVal">
       </router-view>
-      <Content v-if="!pageVal" class="h-[calc(100vh-72px)] overflow-y-auto py-8 px-12 flex items-center justify-center flex-col">
-        <t-card hover-shadow header-bordered class="flex items-center justify-center font-bold text-3xl w-2/3 h-2/3 rounded-3xl">
+      <Content v-if="!pageVal"
+               class="h-[calc(100vh-72px)] overflow-y-auto py-8 px-12 flex items-center justify-center flex-col">
+        <t-card hover-shadow header-bordered
+                class="flex items-center justify-center font-bold text-3xl w-2/3 h-2/3 rounded-3xl">
           <div>
             Hi, {{ authStore.userInfo.username }}
           </div>
@@ -132,9 +136,14 @@ const handleLogout = async () => {
 // pageVal = 2, router-view to /user/ranking
 // pageVal = 3, router-view to /user/arxiv
 const pageVal = ref(false)
-const handleMenuClick = () => {
+const handleArxivClick = () => {
   pageVal.value = true
   router.push({name: 'showArxiv'})
+}
+
+const handleSettingClick = () => {
+  pageVal.value = true
+  router.push({name: 'showSetting'})
 }
 
 

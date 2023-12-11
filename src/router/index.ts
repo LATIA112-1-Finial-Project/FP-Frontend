@@ -57,6 +57,15 @@ const routes: Array<RouteRecordRaw> = [
                 component: () =>
                     import("@/views/user/arxivPage.vue"),
             },
+            {
+                path: "/setting",
+                name: "showSetting",
+                meta: {
+                    titleKey: "設定頁面",
+                },
+                component: () =>
+                    import("@/views/user/userSetting.vue"),
+            }
         ],
     }
 ];
