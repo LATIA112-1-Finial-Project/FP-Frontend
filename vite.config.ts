@@ -15,7 +15,10 @@ if (!process.env.VITE_API_ENDPOINT) {
   */
   const gitBranch = branch.sync() || "";
   if (gitBranch === "main") {
-    process.env.VITE_ADMISSIONS_API_ENDPOINT = "";
+    process.env.VITE_ADMISSIONS_API_ENDPOINT = "https://latiafp-backend.subarya.me/api/v1";
+  }
+  else if (gitBranch === "develop") {
+    process.env.VITE_API_ENDPOINT = "https://latiafp-backend.subarya.me/api/v1";
   }
   else {
     process.env.VITE_API_ENDPOINT = "http://127.0.0.1:8080/api/v1";
