@@ -122,6 +122,11 @@ const onSubmitResetPassword = async () => {
     isPopupMessage.value = false
     return
   }
+  if (resetPasswordForm.value.new_password === resetPasswordForm.value.old_password){
+    await MessagePlugin.error('新密碼不可與舊密碼相同')
+    isPopupMessage.value = false
+    return
+  }
   isSubmitting.value = true
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/reset_password', {
         method: 'POST',
@@ -153,6 +158,11 @@ const onSubmitResetPassword = async () => {
       }
       else if(data.value.data === 'Old password is wrong'){
         await MessagePlugin.error('舊密碼錯誤')
+        isPopupMessage.value = false
+        return
+      }
+      else if(data.value.data === 'New same as old'){
+        await MessagePlugin.error('新密碼不可與舊密碼相同')
         isPopupMessage.value = false
         return
       }
