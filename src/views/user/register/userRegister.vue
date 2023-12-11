@@ -8,7 +8,7 @@
         <router-link to="/login" class="self-start">
           <Button theme="success" ghost>
             <template #icon>
-              <ArrowLeftIcon />
+              <ArrowLeftIcon/>
             </template>
             上一頁
           </Button>
@@ -20,7 +20,7 @@
           <FormItem class="my-4" name="username">
             <Input v-model="registerForm.username" clearable placeholder="使用者名稱">
               <template #prefix-icon>
-                <User1Icon />
+                <User1Icon/>
               </template>
             </Input>
           </FormItem>
@@ -28,7 +28,7 @@
           <FormItem class="my-4" name="email">
             <Input v-model="registerForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
-                <MailIcon />
+                <MailIcon/>
               </template>
             </Input>
           </FormItem>
@@ -36,7 +36,7 @@
           <FormItem name="password">
             <Input v-model="registerForm.password" type="password" clearable placeholder="密碼">
               <template #prefix-icon>
-                <lock-on-icon />
+                <lock-on-icon/>
               </template>
             </Input>
           </FormItem>
@@ -44,7 +44,7 @@
           <FormItem name="password">
             <Input v-model="registerForm.chkPassword" type="password" clearable placeholder="確認密碼">
               <template #prefix-icon>
-                <lock-on-icon />
+                <lock-on-icon/>
               </template>
             </Input>
           </FormItem>
@@ -59,10 +59,11 @@
 </template>
 <script setup lang="ts">
 import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
-import { MailIcon, LockOnIcon, ArrowLeftIcon, User1Icon } from 'tdesign-icons-vue-next'
+import {MailIcon, LockOnIcon, ArrowLeftIcon, User1Icon} from 'tdesign-icons-vue-next'
 import {ref} from "vue";
-import { useFetch } from "@vueuse/core";
-import { useRouter } from "vue-router"
+import {useFetch} from "@vueuse/core";
+import {useRouter} from "vue-router"
+
 const registerForm = ref({
   username: '',
   email: '',
@@ -85,19 +86,33 @@ const onSubmit = async () => {
     return
   }
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: registerForm.value.username,
-      email: registerForm.value.email,
-      password: registerForm.value.password,
-    })
-  }).get().json<RegisterResData>()
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: registerForm.value.username,
+          email: registerForm.value.email,
+          password: registerForm.value.password,
+          chk_password: registerForm.value.chkPassword,
+        })
+      },
+      {
+        updateDataOnError: true,
+        onFetchError: (error) => {
+          return error
+        }
+      }
+  ).get().json<RegisterResData>()
   if (data.value) {
     if (data.value.msg === 'error') {
-     await MessagePlugin.error('註冊失敗')
+      if (data.value.data === 'Required missing') {
+        await MessagePlugin.error('請確認填寫完整資料')
+        return
+      }
+      else if (data.value.data === 'Not the same') {
+        await MessagePlugin.error('密碼與確認密碼不一致')
+      }
       return
     } else if (data.value.msg === 'duplicate') {
       await MessagePlugin.error('此帳號已被註冊')
