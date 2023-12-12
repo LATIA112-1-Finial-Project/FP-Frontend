@@ -31,6 +31,24 @@ const routes: Array<RouteRecordRaw> = [
             import("@/views/user/register/userRegister.vue"),
     },
     {
+        path: "/forgetPassword",
+        name: "userForgetPassword",
+        meta: {
+            titleKey: "忘記密碼頁面",
+        },
+        component: () =>
+            import("@/views/user/forgetPassword/landView.vue"),
+    },
+    {
+        path: "/resetPassword",
+        name: "userResetPassword",
+        meta: {
+            titleKey: "重設密碼頁面",
+        },
+        component: () =>
+            import("@/views/user/forgetPassword/userForgetPassword.vue"),
+    },
+    {
         path: "/echarts",
         name: "showEcharts",
         meta: {
