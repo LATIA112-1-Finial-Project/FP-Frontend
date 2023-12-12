@@ -21,7 +21,7 @@
           </router-link>
         </div>
 
-        <Form ref="form" class="!p-4 !px-12 !pb-8" :data="loginForm" :colon="true" :label-width="0">
+        <Form ref="form" class="!p-4 !px-12 !pb-2" :data="loginForm" :colon="true" :label-width="0">
           <FormItem class="my-4" name="account">
             <Input v-model="loginForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
@@ -42,6 +42,13 @@
             <Button theme="success" type="submit" block @click="onSubmit">登入</Button>
           </FormItem>
         </Form>
+
+        <div class="flex items-center justify-center mt-4 pb-4">
+          <div class="mr-4 text-white">忘記密碼嗎？</div>
+          <router-link to="/forgetPassword" class="text-blue-500 hover:underline">
+            忘記密碼
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
