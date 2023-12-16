@@ -76,6 +76,15 @@ const routes: Array<RouteRecordRaw> = [
                     import("@/views/user/arxivPage.vue"),
             },
             {
+              path: "/topuniversity",
+                name: "showTopUniversity",
+                meta: {
+                    titleKey: "Top University 頁面",
+                },
+                component: () =>
+                    import("@/views/user/universityPage.vue"),
+            },
+            {
                 path: "/setting",
                 name: "showSetting",
                 meta: {

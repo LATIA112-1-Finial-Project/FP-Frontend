@@ -10,11 +10,9 @@
         <t-menu-item value="1" class="text-md font-semibold">
           綜合討論區
         </t-menu-item>
-        <t-submenu value="2" title="大學排名分析" class="text-md font-semibold">
-          <t-menu-item value="2-1"> 綜合分數</t-menu-item>
-          <t-menu-item value="2-2"> 學校聲望</t-menu-item>
-          <t-menu-item value="2-3"> 師資聲望</t-menu-item>
-        </t-submenu>
+        <t-menu-item value="2" @click="handleUniversityClick" class="text-md font-semibold">
+          大學排名分析
+        </t-menu-item>
         <t-menu-item value="3" @click="handleArxivClick" class="text-md font-semibold">
           論文領域熱門分析
         </t-menu-item>
@@ -139,6 +137,11 @@ const pageVal = ref(false)
 const handleArxivClick = () => {
   pageVal.value = true
   router.push({name: 'showArxiv'})
+}
+
+const handleUniversityClick = () => {
+  pageVal.value = true
+  router.push({name: 'showTopUniversity'})
 }
 
 const handleSettingClick = () => {
