@@ -169,6 +169,12 @@ const onSubmitResetUsername = async () => {
         isSubmitting.value = false
         return
       }
+      else if(data.value.data === 'Username already exist'){
+        await MessagePlugin.error('該名稱已被使用')
+        isPopupMessage.value = false
+        isSubmitting.value = false
+        return
+      }
       await MessagePlugin.error("修改失敗，可能是連線逾時，請重新登入後重試")
       isPopupMessage.value = false
       isSubmitting.value = false

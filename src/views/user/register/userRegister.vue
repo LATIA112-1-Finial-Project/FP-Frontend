@@ -14,37 +14,14 @@
           </Button>
         </router-link>
         <div class="p-2 text-center text-4xl font-bold text-white">註冊</div>
-        <div class="text-center text-white">請輸入您的電子郵件與密碼</div>
+        <div class="text-center text-white">請輸入您的電子郵件</div>
 
         <Form ref="form" class="!mt-8 !p-4 !px-12 !pb-8" :data="registerForm" :colon="true" :label-width="0">
-          <FormItem class="my-4" name="username">
-            <Input v-model="registerForm.username" clearable placeholder="使用者名稱">
-              <template #prefix-icon>
-                <User1Icon/>
-              </template>
-            </Input>
-          </FormItem>
 
           <FormItem class="my-4" name="email">
             <Input v-model="registerForm.email" clearable placeholder="電子郵件">
               <template #prefix-icon>
                 <MailIcon/>
-              </template>
-            </Input>
-          </FormItem>
-
-          <FormItem name="password">
-            <Input v-model="registerForm.password" type="password" clearable placeholder="密碼">
-              <template #prefix-icon>
-                <lock-on-icon/>
-              </template>
-            </Input>
-          </FormItem>
-
-          <FormItem name="password">
-            <Input v-model="registerForm.chkPassword" type="password" clearable placeholder="確認密碼">
-              <template #prefix-icon>
-                <lock-on-icon/>
               </template>
             </Input>
           </FormItem>
@@ -59,19 +36,14 @@
 </template>
 <script setup lang="ts">
 import {Button, Form, FormItem, Input, MessagePlugin} from "tdesign-vue-next";
-import {MailIcon, LockOnIcon, ArrowLeftIcon, User1Icon} from 'tdesign-icons-vue-next'
+import {MailIcon, ArrowLeftIcon} from 'tdesign-icons-vue-next'
 import {ref} from "vue";
 import {useFetch} from "@vueuse/core";
-import {useRouter} from "vue-router"
 
 const registerForm = ref({
-  username: '',
   email: '',
-  password: '',
-  chkPassword: '',
 })
 
-const router = useRouter()
 const isSubmitting = ref(false)
 
 interface RegisterResData {
@@ -82,21 +54,13 @@ interface RegisterResData {
 
 const onSubmit = async () => {
   isSubmitting.value = true
-  if (registerForm.value.password !== registerForm.value.chkPassword) {
-    await MessagePlugin.error('密碼不一致')
-    isSubmitting.value = false
-    return
-  }
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          username: registerForm.value.username,
           email: registerForm.value.email,
-          password: registerForm.value.password,
-          chk_password: registerForm.value.chkPassword,
         })
       },
       {
@@ -109,24 +73,17 @@ const onSubmit = async () => {
   if (data.value) {
     if (data.value.msg === 'error') {
       if (data.value.data === 'Required missing') {
-        await MessagePlugin.error('請確認填寫完整資料')
+        await MessagePlugin.error('請確認填寫電子郵件')
         isSubmitting.value = false
         return
       }
-      else if (data.value.data === 'Not the same') {
-        await MessagePlugin.error('密碼與確認密碼不一致')
-        isSubmitting.value = false
-      }
-      isSubmitting.value = false
-      return
     } else if (data.value.msg === 'duplicate') {
-      await MessagePlugin.error('此帳號名稱或電子郵件已被註冊')
+      await MessagePlugin.error('此電子郵件已被註冊')
       isSubmitting.value = false
       return
     }
-    await MessagePlugin.success('註冊成功，請前往電子郵件進行驗證')
+    await MessagePlugin.success('成功，請前往電子郵件進行下一步註冊')
     isSubmitting.value = false
-    await router.replace({name: 'userLogin'})
   }
   isSubmitting.value = false
 }

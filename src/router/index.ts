@@ -31,6 +31,15 @@ const routes: Array<RouteRecordRaw> = [
             import("@/views/user/register/userRegister.vue"),
     },
     {
+        path: "/register/verify",
+        name: "userRegisterVerify",
+        meta: {
+            titleKey: "驗證頁面",
+        },
+        component: () =>
+            import("@/views/user/register/verify.vue"),
+    },
+    {
         path: "/forgetPassword",
         name: "userForgetPassword",
         meta: {
