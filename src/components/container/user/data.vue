@@ -21,7 +21,7 @@
           </Button>
         </div>
       </div>
-      <div v-else class="flex justify-between items-center">
+      <div v-else class="flex justify-between items-center" v-loading="isSubmitting">
         <div class="flex-grow">
           <Input v-model="resetUsernameForm.new_username" clearable placeholder="新使用者名稱">
             <template #prefix-icon>
@@ -55,12 +55,14 @@
           {{ authStore.userInfo.email }}
         </div>
         <div class="ml-4 ">
+          <t-popup content="此功能還在開發喔，請耐心等候">
           <Button size="medium" theme="danger" disabled>
             <template #icon>
               <EditIcon/>
             </template>
             編輯
           </Button>
+          </t-popup>
         </div>
       </div>
     </div>
@@ -69,7 +71,11 @@
         header="確認修改名稱？"
         :visible="isPopupMessage"
         :on-confirm="onSubmitResetUsername"
-        confirmBtn="確認"
+        :confirm-btn="{
+          content: '確認',
+          theme: 'danger',
+          loading: isSubmitting,
+        }"
         :on-close="cancelResetUsername"
         cancelBtn="取消"
     />
@@ -85,6 +91,7 @@ import {useFetch} from "@vueuse/core";
 
 const authStore = useAuthStore();
 const idEditUsername = ref(false)
+const isSubmitting = ref(false)
 
 const handleEditUsername = () => {
   resetUsernameForm.value.new_username = authStore.userInfo.username
@@ -132,6 +139,7 @@ const onSubmitResetUsername = async () => {
     isPopupMessage.value = false
     return
   }
+  isSubmitting.value = true
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/reset_username', {
         method: 'POST',
         headers: {
@@ -152,15 +160,18 @@ const onSubmitResetUsername = async () => {
       if(data.value.data === 'Required missing'){
         await MessagePlugin.error('名稱不可為空')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       else if(data.value.data === 'New same as old'){
         await MessagePlugin.error('不可與舊名稱相同')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       await MessagePlugin.error("修改失敗，可能是連線逾時，請重新登入後重試")
       isPopupMessage.value = false
+      isSubmitting.value = false
       return
     }
     await MessagePlugin.success("修改成功")
@@ -171,7 +182,9 @@ const onSubmitResetUsername = async () => {
     }
     idEditUsername.value = false
     isPopupMessage.value = false
+    isSubmitting.value = false
   }
+  isSubmitting.value = false
 }
 </script>
 

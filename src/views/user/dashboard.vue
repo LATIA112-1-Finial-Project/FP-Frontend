@@ -7,8 +7,10 @@
             <div class="font-bold text-xl ml-8" @click="pageVal=false"> 大學排名與熱門領域討論站</div>
           </router-link>
         </template>
-        <t-menu-item value="1" class="text-md font-semibold">
+        <t-menu-item value="1" class="text-md font-semibold" disabled>
+          <t-popup content="此功能還在開發喔，請耐心等候">
           綜合討論區
+          </t-popup>
         </t-menu-item>
         <t-menu-item value="2" @click="handleUniversityClick" class="text-md font-semibold">
           大學排名分析

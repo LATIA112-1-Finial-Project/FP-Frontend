@@ -39,7 +39,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="onSubmit">登入</Button>
+            <Button theme="success" type="submit" block @click="onSubmit" v-loading="isSubmitting" :disabled="isSubmitting">登入</Button>
           </FormItem>
         </Form>
 
@@ -72,6 +72,8 @@ const isLogin = ref(false)
 
 const router = useRouter();
 
+const isSubmitting = ref(false)
+
 
 interface AuthData {
   token: string;
@@ -86,6 +88,7 @@ interface LoginResData {
 }
 
 const onSubmit = async () => {
+  isSubmitting.value = true
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/login', {
         method: 'POST',
         headers: {
@@ -103,15 +106,18 @@ const onSubmit = async () => {
   if (data.value) {
     if (data.value.msg === 'error') {
       await MessagePlugin.error("登入失敗，請檢查帳號密碼是否正確")
+      isSubmitting.value = false
       return
     }
     // not_confirmed
     if (data.value.msg === 'not_confirmed') {
       await MessagePlugin.error("電子郵件尚未驗證")
+      isSubmitting.value = false
       return
     }
     else if (data.value.msg === 'not_confirmed') {
       await MessagePlugin.success(data.value.msg)
+      isSubmitting.value = false
       return
     }
     const resData = data.value.data
@@ -127,6 +133,7 @@ const onSubmit = async () => {
 
 const loginAfter = () => {
   isLogin.value = true
+  isSubmitting.value = false
   router.replace({name: 'showDashboard'})
 }
 </script>

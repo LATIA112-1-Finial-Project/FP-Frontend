@@ -34,7 +34,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="onSubmit">送出</Button>
+            <Button theme="success" type="submit" block @click="onSubmit" v-loading="isSubmitting" :disabled="isSubmitting">送出</Button>
           </FormItem>
         </Form>
       </div>
@@ -54,13 +54,14 @@ const forgetPasswordForm = ref({
   token: '',
 })
 
+const isSubmitting = ref(false)
+
 const router = useRouter()
 const url = window.location;
 
 const access_token = new URLSearchParams(url.search).get("token")
 if (access_token){
   forgetPasswordForm.value.token = access_token
-  // console.log("access_token ", access_token)
 }
 
 interface ForgetPasswordResData {
@@ -70,16 +71,18 @@ interface ForgetPasswordResData {
 }
 
 const onSubmit = async () => {
+  isSubmitting.value = true
   if (!access_token){
     await MessagePlugin.error('驗證過期或無效驗證，請重新忘記密碼')
     await router.replace({name: 'userForgetPassword'})
+    isSubmitting.value = false
     return
   }
   if (forgetPasswordForm.value.password !== forgetPasswordForm.value.chkPassword) {
     await MessagePlugin.error('密碼與確認密碼不一致')
+    isSubmitting.value = false
     return
   }
-
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/forget_password_confirm', {
         method: 'POST',
         headers: {
@@ -102,19 +105,24 @@ const onSubmit = async () => {
     if (data.value.msg === 'error') {
       if (data.value.data === 'Required missing') {
         await MessagePlugin.error('請確認填寫完整資料')
+        isSubmitting.value = false
         return
       }
       else if (data.value.data === 'Not the same') {
         await MessagePlugin.error('密碼與確認密碼不一致')
       }
+      isSubmitting.value = false
       return
     } else if (data.value.msg === 'New same as old') {
       await MessagePlugin.error('不可與過去的密碼相同')
+      isSubmitting.value = false
       return
     }
     await MessagePlugin.success('重設成功，請重新登入')
+    isSubmitting.value = false
     await router.replace({name: 'userLogin'})
   }
+  isSubmitting.value = false
 }
 </script>
 <style scoped>

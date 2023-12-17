@@ -18,7 +18,7 @@
           </Button>
         </div>
       </div>
-      <div v-else class="flex-col justify-between items-center">
+      <div v-else class="flex-col justify-between items-center" v-loading="isSubmitting">
         <div class="flex-grow">
           <Input class="mb-4" v-model="resetPasswordForm.old_password" type="password" clearable placeholder="舊密碼">
             <template #prefix-icon>
@@ -58,7 +58,11 @@
         header="確認修改密碼？"
         :visible="isPopupMessage"
         :on-confirm="onSubmitResetPassword"
-        confirmBtn="確認"
+        :confirm-btn="{
+          content: '確認',
+          theme: 'danger',
+          loading: isSubmitting,
+        }"
         :on-close="cancelResetPassword"
         cancelBtn="取消"
     />
@@ -149,26 +153,31 @@ const onSubmitResetPassword = async () => {
       if(data.value.data === 'Required missing'){
         await MessagePlugin.error('請確認填寫完整資料')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       else if(data.value.data === 'Not the same'){
         await MessagePlugin.error('密碼與確認密碼不一致')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       else if(data.value.data === 'Old password is wrong'){
         await MessagePlugin.error('舊密碼錯誤')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       else if(data.value.data === 'New same as old'){
         await MessagePlugin.error('新密碼不可與舊密碼相同')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
       else {
         await MessagePlugin.error('修改失敗，可能是連線逾時，請重新登入後重試')
         isPopupMessage.value = false
+        isSubmitting.value = false
         return
       }
 
@@ -177,6 +186,7 @@ const onSubmitResetPassword = async () => {
       await MessagePlugin.success('修改成功，請重新登入')
       idEditPassword.value = false
       isPopupMessage.value = false
+      isSubmitting.value = false
       resetPasswordForm.value = {
         old_password: '',
         new_password: '',
@@ -186,6 +196,7 @@ const onSubmitResetPassword = async () => {
       return
     }
   }
+  isSubmitting.value = false
 }
 
 const handleLogout = async () => {
