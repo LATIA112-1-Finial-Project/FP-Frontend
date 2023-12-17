@@ -24,7 +24,7 @@
             </Input>
           </FormItem>
           <FormItem>
-            <Button theme="success" type="submit" block @click="onSubmit">送出</Button>
+            <Button theme="success" type="submit" block @click="onSubmit" v-loading="isSubmitting" :disabled="isSubmitting">送出</Button>
           </FormItem>
         </Form>
       </div>
@@ -41,6 +41,7 @@ const forgetForm = ref({
   email: '',
 })
 
+const isSubmitting = ref(false)
 
 interface ForgetResData {
   code: number;
@@ -49,6 +50,7 @@ interface ForgetResData {
 }
 
 const onSubmit = async () => {
+  isSubmitting.value = true
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/forget_password', {
         method: 'POST',
         headers: {
@@ -69,11 +71,14 @@ const onSubmit = async () => {
     if (data.value.msg === 'error') {
       if (data.value.data === 'Email not found') {
         await MessagePlugin.error('電子郵件不存在')
+        isSubmitting.value = false
         return
       }
     }
     await MessagePlugin.success('寄送重設密碼連結成功，請前往電子郵件查看')
+    isSubmitting.value = false
   }
+  isSubmitting.value = false
 }
 </script>
 <style scoped>

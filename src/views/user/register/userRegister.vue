@@ -50,7 +50,7 @@
           </FormItem>
 
           <FormItem>
-            <Button theme="success" type="submit" block @click="onSubmit">送出</Button>
+            <Button theme="success" type="submit" block @click="onSubmit" v-loading="isSubmitting" :disabled="isSubmitting" >送出</Button>
           </FormItem>
         </Form>
       </div>
@@ -72,7 +72,7 @@ const registerForm = ref({
 })
 
 const router = useRouter()
-
+const isSubmitting = ref(false)
 
 interface RegisterResData {
   code: number;
@@ -81,8 +81,10 @@ interface RegisterResData {
 }
 
 const onSubmit = async () => {
+  isSubmitting.value = true
   if (registerForm.value.password !== registerForm.value.chkPassword) {
     await MessagePlugin.error('密碼不一致')
+    isSubmitting.value = false
     return
   }
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/register', {
@@ -108,19 +110,25 @@ const onSubmit = async () => {
     if (data.value.msg === 'error') {
       if (data.value.data === 'Required missing') {
         await MessagePlugin.error('請確認填寫完整資料')
+        isSubmitting.value = false
         return
       }
       else if (data.value.data === 'Not the same') {
         await MessagePlugin.error('密碼與確認密碼不一致')
+        isSubmitting.value = false
       }
+      isSubmitting.value = false
       return
     } else if (data.value.msg === 'duplicate') {
-      await MessagePlugin.error('此帳號已被註冊')
+      await MessagePlugin.error('此帳號名稱或電子郵件已被註冊')
+      isSubmitting.value = false
       return
     }
     await MessagePlugin.success('註冊成功，請前往電子郵件進行驗證')
+    isSubmitting.value = false
     await router.replace({name: 'userLogin'})
   }
+  isSubmitting.value = false
 }
 </script>
 <style scoped>
