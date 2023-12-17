@@ -452,49 +452,7 @@ const handleUniversityResData = async (id: number) => {
     if (data.value.msg !== 'success') {
       return
     }
-    // data push to universityResData and if rank or score not '-', change type to number, else do nothing
-    if (data.value.data) {
-      const resData = data.value.data
-      universityResData.value = [...universityResData.value, {
-        academic_reputation_info_rank_list: resData.academic_reputation_info_rank_list ? resData.academic_reputation_info_rank_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        academic_reputation_info_score_list: resData.academic_reputation_info_score_list ? resData.academic_reputation_info_score_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        academic_reputation_info_year_list: resData.academic_reputation_info_year_list ? resData.academic_reputation_info_year_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        employer_reputation_info_rank_list: resData.employer_reputation_info_rank_list ? resData.employer_reputation_info_rank_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        employer_reputation_info_score_list: resData.employer_reputation_info_score_list ? resData.employer_reputation_info_score_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        employer_reputation_info_year_list: resData.employer_reputation_info_year_list ? resData.employer_reputation_info_year_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        overall_info_rank_list: resData.overall_info_rank_list ? resData.overall_info_rank_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        overall_info_score_list: resData.overall_info_score_list ? resData.overall_info_score_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        overall_info_year_list: resData.overall_info_year_list ? resData.overall_info_year_list.map((item) => {
-          if (item === '-') return item;
-          else return Number(item);
-        }) : [],
-        university_name: resData.university_name,
-      }]
-    }
+    universityResData.value.push(data.value.data)
   }
 }
 
