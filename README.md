@@ -1,4 +1,4 @@
-# Final Project Front end
+# Final Project Frontend
 
 ## Package Manager - PNPM
 
