@@ -85,7 +85,7 @@ const routes: Array<RouteRecordRaw> = [
                     import("@/views/user/arxivPage.vue"),
             },
             {
-              path: "/topuniversity",
+                path: "/topuniversity",
                 name: "showTopUniversity",
                 meta: {
                     titleKey: "Top University 頁面",

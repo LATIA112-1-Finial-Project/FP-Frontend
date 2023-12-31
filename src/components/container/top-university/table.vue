@@ -37,6 +37,9 @@
         <Button theme="primary" class="ml-4" @click="handleOnClick">
           送出
         </Button>
+        <Button theme="warning" class="ml-2" @click="handleOnClickAddFavorite">
+          加入最愛清單
+        </Button>
       </div>
     </div>
     <div class="mx-auto w-2/3 h-2/3">
@@ -246,6 +249,12 @@ interface resData {
   data: UniversityIdName[];
 }
 
+interface FavoriteResData {
+  code: number;
+  msg: string;
+  data: number[];
+}
+
 // value in List is List
 const UniversityIdNameList = ref([] as SelectOptionsType[])
 
@@ -299,6 +308,7 @@ const selectOptionsValue = ref([] as SelectOptionsValue[])
 const allowInput = ref(true);
 const inputValue = ref('');
 const excessTagsDisplayType = ref('scroll');
+const favoriteList = ref([] as number[])
 
 const popupProps = ref({
   overlayInnerClassName: ['narrow-scrollbar'],
@@ -371,6 +381,12 @@ interface UniversityResType {
   data: UniversityResDataType;
 }
 
+interface GeneralResType {
+  code: number;
+  msg: string;
+  data: string;
+}
+
 // array of UniversityResDataType
 const universityResData = ref([] as UniversityResDataType[])
 
@@ -383,6 +399,13 @@ const handleOnClick = async () => {
     await handleUniversityResData(id);
   }));
   await handleUniversityResDataDrawChart()
+}
+
+const handleOnClickAddFavorite = async () => {
+  // initial universityResData
+  universityResData.value = []
+  const idList = selectOptionsValue.value.map((item) => item.value)
+  await handleUniversityAddFavorite(idList)
 }
 
 const chartKey = ref(0)
@@ -451,12 +474,58 @@ const handleUniversityResData = async (id:number) => {
   }
 }
 
+const handleUniversityAddFavorite = async (idList: number[]) => {
+  const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/university/add_to_favorite', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${userInfo.token}`
+    },
+    body: JSON.stringify({
+      university_id_list: idList
+    })
+  }).get().json<GeneralResType>()
+  if (data.value) {
+    if (data.value.msg !== 'success') {
+      return
+    }
+    await MessagePlugin.success("加入最愛成功")
+  }
+}
+
+const getUniversityFavoriteList = async () => {
+  const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/university/get_favorite', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${userInfo.token}`
+    }
+  }).get().json<FavoriteResData>()
+  if (data.value) {
+    if (data.value.msg !== 'success') {
+      return
+    }
+    favoriteList.value = data.value.data
+  }
+}
+
 // async onMounted
 onMounted(async () => {
   if (!authStore.isLoggedIn) {
     await router.replace({name: 'userLogin'})
   }
   await handleUniversityIdName()
+  await getUniversityFavoriteList()
+  await Promise.all(favoriteList.value.map(async (id) => {
+    await handleUniversityResData(id);
+  }));
+  // add university name and id in selectOptionsValue
+  await Promise.all(favoriteList.value.map(async (id) => {
+    const tagOption = allUniversityValue.value.find((t) => t.value === id);
+    if (!tagOption) return;
+    selectOptionsValue.value.push(tagOption);
+  }));
+  await handleUniversityResDataDrawChart()
 })
 
 
