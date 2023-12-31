@@ -14,6 +14,13 @@
           論文領域熱門分析
         </t-menu-item>
         <template #operations>
+          <t-button variant="text" shape="square" class="mr-4">
+            <template #icon>
+              <a href="https://github.com/LATIA112-1-Finial-Project" target="_blank">
+                <LogoGithubIcon />
+              </a>
+            </template>
+          </t-button>
           <t-button variant="text" shape="square" class="mr-4" @click="handleSettingClick">
             <template #icon>
               <router-link :to="{name: 'showSetting'}">
@@ -52,7 +59,7 @@
 import {useAuthStore} from "@/stores/auth.ts";
 import {onMounted, ref} from "vue";
 import {useFetch} from "@vueuse/core";
-import {User1Icon, LogoutIcon} from "tdesign-icons-vue-next";
+import {User1Icon, LogoutIcon, LogoGithubIcon} from "tdesign-icons-vue-next";
 import {MessagePlugin} from "tdesign-vue-next";
 import {useRouter} from "vue-router";
 import {Content} from "tdesign-vue-next";
