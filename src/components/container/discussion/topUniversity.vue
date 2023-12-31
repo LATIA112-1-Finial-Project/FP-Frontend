@@ -20,8 +20,7 @@
               <span>回覆</span>
             </t-space>
           </template>
-          <template v-if="commentNumberOfPost.find(comment => comment.id === postItem.id)?.number > 0" :key="handleKey"
-                    #reply>
+          <template v-if="commentNumberOfPost.find(comment => comment.id === postItem.id)?.number > 0" #reply>
             <div v-for="commentItem in commentData">
               <Comment
                   avatar="src/assets/user.svg"
@@ -112,7 +111,6 @@ const postTitle = ref('')
 const commentContent = ref('')
 const commentToUsername = ref('')
 const commentToPostId = ref(0)
-const handleKey = ref(0)
 const showTitle = ref('標題：')
 const isShowComment = ref(false)
 const authStore = useAuthStore()
@@ -240,6 +238,7 @@ const handlePostData = async () => {
 
 const handleGetCommentData = async () => {
   isLoading.value = true
+  commentNumberOfPost.value = []
   const {data} = await useFetch(`${import.meta.env.VITE_API_ENDPOINT}` + '/auth/comments/2', {
     method: 'GET',
     headers: {
@@ -306,8 +305,6 @@ const handleCommentData = async () => {
     }
     commentData.value = data.value.data
     commentContent.value = ''
-    if (handleKey.value === 0) handleKey.value++
-    else handleKey.value = 0
     await handleGetPostData()
     await handleGetCommentData()
   }
@@ -371,7 +368,6 @@ const handleCleanComment = () => {
 onMounted(async () => {
   await handleGetPostData()
   await handleGetCommentData()
-  handleKey.value = 0
 })
 
 </script>
